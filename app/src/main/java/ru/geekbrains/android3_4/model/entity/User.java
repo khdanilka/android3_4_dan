@@ -8,6 +8,7 @@ public class User
 {
     private String avatarUrl;
     private String login;
+    private String repos_url;
 
     public String getAvatarUrl()
     {
@@ -27,5 +28,14 @@ public class User
     public void setLogin(String login)
     {
         this.login = login;
+    }
+
+
+    public String getRepos_url() {
+        return repos_url;
+    }
+
+    public void setRepos_url(String repos_url) {
+        this.repos_url = repos_url;
     }
 }
