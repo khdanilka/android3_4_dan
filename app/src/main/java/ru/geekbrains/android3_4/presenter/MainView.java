@@ -1,4 +1,4 @@
-package ru.geekbrains.android3_4.view;
+package ru.geekbrains.android3_4.presenter;
 
 /**
  * Created by stanislav on 3/12/2018.

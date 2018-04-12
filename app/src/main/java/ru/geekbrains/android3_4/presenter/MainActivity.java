@@ -1,12 +1,17 @@
-package ru.geekbrains.android3_4.view;
+package ru.geekbrains.android3_4.presenter;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.arellomobile.mvp.MvpAppCompatActivity;
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,10 +23,8 @@ import okhttp3.Request;
 import ru.geekbrains.android3_4.R;
 import ru.geekbrains.android3_4.model.image.ImageLoader;
 import ru.geekbrains.android3_4.model.image.ImageLoaderGlide;
-import ru.geekbrains.android3_4.model.image.ImageLoaderPicasso;
-import ru.geekbrains.android3_4.presenter.MainPresenter;
 
-public class MainActivity extends AppCompatActivity implements MainView
+public class MainActivity extends MvpAppCompatActivity implements MainViewInterface
 {
     private static final String TAG = "MainActivity";
 
@@ -29,9 +32,21 @@ public class MainActivity extends AppCompatActivity implements MainView
     @BindView(R.id.tv_username) TextView usernameTextView;
     @BindView(R.id.tv_error) TextView errorTextView;
     @BindView(R.id.pb_loading) ProgressBar loadingProgressBar;
+    @BindView(R.id.rv) RecyclerView recyclerView;
 
-    MainPresenter presenter;
     ImageLoader<ImageView> imageLoader;
+    Adapter adapter;
+
+    @InjectPresenter
+    MainPresenter presenter;
+
+    @ProvidePresenter
+    public MainPresenter provideMainPresenter()
+    {
+        String string = "hello";
+        return new MainPresenter(AndroidSchedulers.mainThread());
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -40,8 +55,7 @@ public class MainActivity extends AppCompatActivity implements MainView
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         imageLoader = new ImageLoaderGlide();
-        presenter = new MainPresenter(this, AndroidSchedulers.mainThread());
-        presenter.loadInfo();
+        //presenter.loadInfo();
     }
 
     private void getByOkhttp()
@@ -84,5 +98,19 @@ public class MainActivity extends AppCompatActivity implements MainView
     {
         loadingProgressBar.setVisibility(View.GONE);
         errorTextView.setText(message);
+    }
+
+    @Override
+    public void init() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        adapter = new Adapter(presenter.getListFiles());
+        recyclerView.setAdapter(adapter);
+        presenter.loadInfo();
+
+    }
+
+    @Override
+    public void updateList() {
+        adapter.notifyDataSetChanged();
     }
 }
